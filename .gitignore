@@ -1,0 +1,14 @@
+# Kubernetes secrets - never commit
+*-secret.yaml
+*-secrets.yaml
+secrets/
+kubeconfig
+admin.conf
+*.key
+*.pem
+
+# Helm
+charts/*.tgz
+
+# OS
+.DS_Store
