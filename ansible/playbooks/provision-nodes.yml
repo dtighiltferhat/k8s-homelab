@@ -1,0 +1,21 @@
+---
+# ansible/playbooks/provision-nodes.yml
+# Provisions all cluster nodes: installs base packages, container runtime, and K8s components
+
+- name: Configure all nodes — base setup
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Install container runtime on all nodes
+  hosts: all
+  become: true
+  roles:
+    - docker
+
+- name: Install Kubernetes components on all nodes
+  hosts: all
+  become: true
+  roles:
+    - kubernetes
