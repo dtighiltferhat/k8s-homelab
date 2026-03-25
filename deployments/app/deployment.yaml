@@ -1,0 +1,99 @@
+---
+# deployments/app/deployment.yaml
+# Sample application deployment with resource limits and health checks
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-app
+  namespace: app
+  labels:
+    app: sample-app
+    version: "1.0"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sample-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: sample-app
+        version: "1.0"
+    spec:
+      containers:
+        - name: sample-app
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          envFrom:
+            - configMapRef:
+                name: sample-app-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-app-svc
+  namespace: app
+spec:
+  selector:
+    app: sample-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sample-app-config
+  namespace: app
+data:
+  APP_ENV: "homelab"
+  LOG_LEVEL: "info"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sample-app-hpa
+  namespace: app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sample-app
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
