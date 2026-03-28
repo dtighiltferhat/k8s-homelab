@@ -91,6 +91,12 @@ helm install sample-app helm-charts/sample-app/
 - **Grafana dashboards** for pod health and resource utilization
 - **Node failure simulation** and recovery procedures
 
+## Changelog
+- Added Ansible roles for cluster node provisioning
+- Added multi-node K8s deployment with HPA and resource limits
+- Added monitoring stack placeholder for Prometheus and Grafana
+- Added cluster architecture overview
+
 ## Author
 
 **Djamal Tighilt Ferhat** — DevOps & Cloud Engineer
